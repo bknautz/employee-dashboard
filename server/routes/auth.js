@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const { generateAccessToken, generateRefreshToken } = require('../utils/generateTokens');
 
 const router = express.Router();
 
@@ -25,14 +26,19 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
     res.status(201).json({
       message: 'User created',
-      userId: user._id,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+      },
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 router.post('/login', async (req, res) => {
   try {
@@ -48,18 +54,23 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // JWT generation goes here next - for now just confirm identity works
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
     res.status(200).json({
       message: 'Login successful',
-      userId: user._id,
-      role: user.role,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
-module.exports = router;
 
 
 
