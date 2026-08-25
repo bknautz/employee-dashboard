@@ -39,6 +39,10 @@ router.post('/register', async (req, res) => {
         role: user.role,
       },
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 router.post('/login', async (req, res) => {
   try {
@@ -72,6 +76,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
-
-
+module.exports = router;
