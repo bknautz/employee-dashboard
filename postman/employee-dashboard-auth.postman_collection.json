@@ -1,0 +1,482 @@
+{
+  "info": {
+    "_postman_id": "employee-dashboard-auth-collection",
+    "name": "Employee Dashboard - Auth",
+    "description": "Role x route verification matrix for the auth layer (requireAuth, requireRole, refresh flow).\n\nHow to run:\n1. Start the server (`node server.js` in /server) so it's listening on http://localhost:5000.\n2. Run folder \"1. Register\" first, top to bottom — each request saves its tokens into collection variables that the later folders depend on.\n3. Then run folders 2, 3, and 4 in any order. Each request has a Postman test assertion on the expected status code, visible in the \"Test Results\" tab after clicking Send.\n4. Re-running \"1. Register\" is safe — emails are timestamped so they won't collide with previous runs. The registered users are NOT auto-deleted; clean them out of Atlas afterward if you don't want scratch data sitting there (filter by email containing \"postman-\").\n5. You can also select the whole collection and click \"Run\" (Collection Runner) to fire every request in order in one pass.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "employeeAccessToken", "value": "" },
+    { "key": "employeeRefreshToken", "value": "" },
+    { "key": "managerAccessToken", "value": "" },
+    { "key": "managerRefreshToken", "value": "" },
+    { "key": "adminAccessToken", "value": "" },
+    { "key": "adminRefreshToken", "value": "" },
+    { "key": "refreshedAccessToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Register",
+      "item": [
+        {
+          "name": "Register Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('employeeAccessToken', data.accessToken);",
+                  "pm.collectionVariables.set('employeeRefreshToken', data.refreshToken);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Role in response is employee', () => pm.expect(data.user.role).to.eql('employee'));",
+                  "pm.test('Returned an access token', () => pm.expect(data.accessToken).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Employee\",\n  \"email\": \"postman-employee-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"employee\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('managerAccessToken', data.accessToken);",
+                  "pm.collectionVariables.set('managerRefreshToken', data.refreshToken);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Role in response is manager', () => pm.expect(data.user.role).to.eql('manager'));",
+                  "pm.test('Returned an access token', () => pm.expect(data.accessToken).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Manager\",\n  \"email\": \"postman-manager-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"manager\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('adminAccessToken', data.accessToken);",
+                  "pm.collectionVariables.set('adminRefreshToken', data.refreshToken);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Role in response is admin', () => pm.expect(data.user.role).to.eql('admin'));",
+                  "pm.test('Returned an access token', () => pm.expect(data.accessToken).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Admin\",\n  \"email\": \"postman-admin-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Protected Route - GET /me (any authenticated role)",
+      "item": [
+        {
+          "name": "GET /me as Employee (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('req.user.role is employee', () => pm.expect(pm.response.json().user.role).to.eql('employee'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me as Manager (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('req.user.role is manager', () => pm.expect(pm.response.json().user.role).to.eql('manager'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me as Admin (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('req.user.role is admin', () => pm.expect(pm.response.json().user.role).to.eql('admin'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me with garbage token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is Invalid or expired token', () => pm.expect(pm.response.json().error).to.eql('Invalid or expired token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer garbage.token.here" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Protected Route - GET /admin-only (admin role only)",
+      "item": [
+        {
+          "name": "GET /admin-only as Employee (expect 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin-only",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "admin-only"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin-only as Manager (expect 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin-only",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "admin-only"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin-only as Admin (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Message is Welcome, admin', () => pm.expect(pm.response.json().message).to.eql('Welcome, admin'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin-only",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "admin-only"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Refresh Flow",
+      "item": [
+        {
+          "name": "POST /refresh with valid Employee refresh token (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('refreshedAccessToken', data.accessToken);",
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returned a new access token', () => pm.expect(data.accessToken).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{employeeRefreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me with the refreshed access token (expect 200 - proves the new token actually works)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('req.user.role is employee', () => pm.expect(pm.response.json().user.role).to.eql('employee'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{refreshedAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /refresh with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No refresh token provided', () => pm.expect(pm.response.json().error).to.eql('No refresh token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /refresh with garbage token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is Invalid or expired refresh token', () => pm.expect(pm.response.json().error).to.eql('Invalid or expired refresh token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"garbage.token.here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /refresh with an Access token instead of Refresh token (expect 401 - proves secret isolation)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is Invalid or expired refresh token', () => pm.expect(pm.response.json().error).to.eql('Invalid or expired refresh token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{employeeAccessToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
