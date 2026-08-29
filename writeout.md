@@ -37,15 +37,15 @@ _(hint: think about what happens to the password before it ever touches the data
 
 **5. Say the route is also role-restricted, like `/admin-only`. What happens after `requireAuth` passes control along — what does `requireRole` check, and what does it need that only `requireAuth` could have provided it?**
 
->
+>RequireRoles takes in a passed argument role from the the site. This is hardcoded for what the need is. From that it uses the passed req.user (which was passed from require auth with id and role) and checks that the user exists, and that the users role matches the passed role. From there it passes it along with next.
 
 **6. Fifteen minutes pass. The user is still using the app and makes another request with their old access token. What does the server do, and what does the client see?**
 
->
+>The server sees there is an error, in this case 401, and stops. The client sees there is an error returned from the server and pushes the next steps.
 
 **7. What does the client do at that point to keep the user logged in without asking them to re-enter their password?**
 
->
+>In the background it sees that there was a 401 error and calls the /refresh. Since we have refresh tokens, the user does not need to re-enter their password. It retrieves a new access token from this and retries the original request. The user does not see any of this, but the client does this in the background.
 
 **8. Walk through what the server does with that refresh request, step by step, from receiving the refresh token to sending back a response.**
 
