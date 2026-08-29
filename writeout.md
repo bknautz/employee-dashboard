@@ -49,15 +49,15 @@ _(hint: think about what happens to the password before it ever touches the data
 
 **8. Walk through what the server does with that refresh request, step by step, from receiving the refresh token to sending back a response.**
 
->
+>Refresh requires the refreshtoken to be passed in the request. First it make sure that the refresh token was passed. From there it decodes the refreshtoken, and if the refresh token is expired it throws an error. Using the decoded refreshtoken, it finds the user in the database, if the user does not exist, that means that the user was deleted. Since it got passed all those guards, it is a valid refresh and generates an accesstoken with the user. 
 
 **9. Why does step 8 need to query the database when verifying the original access token (step 4) didn't?**
 
->
+>It queries the database to confirm the user still exists — the account could have been deleted since the refresh token was issued. It also needs the user's current role: the access token payload includes { userId, role }, but the refresh token's payload only holds userId. So verifying an access token (step 4) never needs the database, since role is already sitting right there in the token. But minting a new access token during refresh does need a database read, purely to fetch the role that isn't in the refresh token.
 
 **10. Seven days pass and the refresh token itself expires. What happens now? What's the user's experience?**
 
->
+>On the next thing the user does that requires a token, the server will use the access token. This will be expired and will return an error. From here the client will get to where the refreshtoken tries to remint an access token. It will get another error and the user will be forced to take steps determined by the frontend design to remint an access and refresh token (requiring their password).
 
 ---
 ## Part 2 — The design decisions
