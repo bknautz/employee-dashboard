@@ -29,11 +29,11 @@ _(hint: think about what happens to the password before it ever touches the data
 
 **3. The client now wants to hit a protected route — say, `GET /api/auth/me`. What does it have to include on that request, and why does it have to include it itself instead of the browser handling it automatically?**
 
->
+>In order to hit a protected route the client must include the users access token. This access token has an authorization header which include Bearer prefix. If it does not include that it stops. Since the access tokens are sitting in local storage within the application, in order for the auth to know about the token, it must be passed as a header with this bearer prefix to allow it to authorize.
 
 **4. Walk through what `requireAuth` does with that incoming request, step by step, from receiving it to either calling `next()` or rejecting it.**
 
->
+>First thing is does is gets the authorization header, if this does not exist, or it is malformed without the bearer prefix it rejects it. From there it is separated into just the token. It then verifies the token, if it is verified it changes the user request to be updated with id and role, and calls next. If the token is invalid or expired it rejects it as well. 
 
 **5. Say the route is also role-restricted, like `/admin-only`. What happens after `requireAuth` passes control along — what does `requireRole` check, and what does it need that only `requireAuth` could have provided it?**
 
@@ -60,7 +60,6 @@ _(hint: think about what happens to the password before it ever touches the data
 >
 
 ---
-
 ## Part 2 — The design decisions
 
 For each of these, write the one- or two-sentence version you'd actually say
