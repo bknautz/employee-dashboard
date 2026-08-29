@@ -21,11 +21,11 @@ Answer each prompt in 1–3 sentences.
 
 _(hint: think about what happens to the password before it ever touches the database)_
 
->
+> Before it does anything, it first ensures that the user does not exist already. It then uses bycrypt to hash the password using the genSalt function. It then calls the database to save the account created, and before the function ends, it generates an access and refresh token.
 
 **2. What does the client receive back from `/register` (or `/login`)? What does it do with each piece?**
 
->
+>The client recieves crucial information that is needed for the user, i.e. id, name, and role. As well as a refresh and access token. The access token is used to access the site, and the refresh token is used to "refresh" the access token when the access token runs out of access time. The non token items are used for ui generation, as if the role is admin it can see admin views, but if its not it cannot. Having a refresh token makes it much easier to create access tokens, as it gets rid of many of the steps for initial access token creation such as password input.
 
 **3. The client now wants to hit a protected route — say, `GET /api/auth/me`. What does it have to include on that request, and why does it have to include it itself instead of the browser handling it automatically?**
 
