@@ -68,27 +68,24 @@ the compressed answer you'd lead with, that invites a follow-up question.
 
 **Why two separate tokens (access + refresh) instead of one long-lived token?**
 
->
+>It ensures if there is somehow a token breach it is only used for at most 15 minutes. Having only short lived tokens requires users to re-input their password, having only long lived tokens are a security issue since access tokens are passed many times throughout the api calls. Having both allows for the best of both worlds, the user is not required for repeat password input, and security is better.
 
 **Why two separate secrets, one per token type?**
 
->
-
-**Why does the refresh token's payload only contain `userId`, and not `role`?**
-
->
+>Security reasons, if the access tokens secret is breached, then the refresh token is still not breached and vice versa. 
 
 **Why do both `requireAuth` and the `/refresh` route return 401 for every failure case, instead of different codes for "expired" vs "malformed" vs "missing"?**
 
->
+>Regardless of the outcome ("expired","missing", "malformed"). The client response is the same. They must reject the request and start the reminting process. IT is also a security benefit as if someone were trying to attack the site, there is no extra information for them to use, as they do not know why the token failed.
 
 **Why does `requireRole` return 403 instead of 401 when the role doesn't match?**
 
->
+>Its an important distiction for the frontend to know for them to not repeat api calls. If a 401 was returned it would mint a new token, but the role would not change, causing it to hit the same error. As well as if a 403 was returned, they know the roles do not match then the UI must be changed, or the user cannot access that part of the site.
 
 **Why doesn't `/refresh` rotate the refresh token on every use? What would change if it did?**
 
->
+>Without rotation (current design) if a users refresh token is taken, it is only an issue for at most 7 days. With rotation, if someone takes the stolen token before the user does, then there will be detection that the token is stolen. However, this also would require the server to hold data for validation on stolen tokens. This would slow the users flow in the site as it would require database write every time refresh is called.
+
 
 **Why is the refresh token stored in the response body / client-side storage instead of an httpOnly cookie? What did that choice trade away, and why was that an acceptable trade for this project specifically?**
 
