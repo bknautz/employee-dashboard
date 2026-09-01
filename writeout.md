@@ -89,11 +89,11 @@ the compressed answer you'd lead with, that invites a follow-up question.
 
 **Why is the refresh token stored in the response body / client-side storage instead of an httpOnly cookie? What did that choice trade away, and why was that an acceptable trade for this project specifically?**
 
->
+>It is stored in the response body to not worry about cross site cookie attacks. The tradeoff for using client side storage is exposure to XSS, since anything that gets into the page as JavaScript can read localStorage directly. Since the application does not have real user data, worrying about cookie attacks is not a real problem. 
 
 **What's still missing from this auth system that a production app would need? (Think about what happens if a user's laptop gets stolen with a valid refresh token still sitting in it.)**
 
->
+>Since the token validation and minting is done in stateless server there is no current auth system to check if a user had his laptop stole. This would require the ability to revoke a specific refresh token so it can no longer mint access tokens. In order to do this there would need to be a database entry that shows if it was revoked.
 
 ---
 
