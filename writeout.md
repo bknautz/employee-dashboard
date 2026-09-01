@@ -104,7 +104,7 @@ Condense the whole thing into what you'd actually say if someone asked
 from them — just you talking, start to finish, in about the time it'd take
 to read this out loud once.
 
->
+>My auth flow utilizes JWTs. It starts out at signup which uses brypt to hash the password before it goes into the database. When a user logs in it grabs the password, uses bcrypts matching function and ensures that the passwords match. From there it passes crucial information such as role, name, and id, as well as mints a refresh and access token. The access token has a short life of 15 minutes and is initially generated through signing in. The refresh token has a life of 7 days and is also initially generated through signing in. The access token can be reminted using the refresh token. That flow starts as the access token runs out of time, it then returns a 401 error which is linked to access problems, next calls /refresh which uses the refresh token to mint a new token. During this minting process there is a database call to ensure that the account has not been deleted within the time frame that has occured. Refresh tokens can not be reminted and are exclusively minted through login, therefore if the refresh token runs out after the 7 days they must re-enter the password. As well as there is role authorization, since there are different roles with different privilages the role check is done server side. When role checks fail it returns a 403 error which is enough to differenciate when a problem occured from token authorization or role problems.
 
 ---
 
