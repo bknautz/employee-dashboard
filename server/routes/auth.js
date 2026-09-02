@@ -1,7 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { generateAccessToken, generateRefreshToken } = require('../utils/generateTokens');
+const requireAuth = require('../middleware/auth');
+const requireRole = require('../middleware/roleCheck');
 
 const router = express.Router();
 
@@ -74,6 +77,44 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+router.post('/refresh', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ error: 'No refresh token provided' });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired refresh token' });
+    }
+
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid or expired refresh token' });
+    }
+
+    const accessToken = generateAccessToken(user);
+
+    res.status(200).json({ accessToken });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Test route: verifies requireAuth attaches req.user from a valid access token
+router.get('/me', requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+// Test route: verifies requireRole restricts access by role on top of requireAuth
+router.get('/admin-only', requireAuth, requireRole('admin'), (req, res) => {
+  res.json({ message: 'Welcome, admin' });
 });
 
 module.exports = router;
