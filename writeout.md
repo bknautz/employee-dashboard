@@ -114,4 +114,5 @@ Be honest here — this section is more useful the more specific it is. What
 took more than one look at the code to explain? What would you *not* be able
 to answer confidently right now if someone pushed back on it?
 
->
+>The place I got stuck on the most was the reasoning to have an access and refresh token. To start the project, I knew I wanted to use JWTs, but I did not understand that one JWT is not enough security and there is a good tradeoff to pursue a 2 JWT token format. Due to my lack of teaching and skills when it comes to user security, I assumed that having a JWT would be enough security, but that is not correct. Having two tokens allows for security breaches on one token to be mitigated, expecially with the time constraint put on the access tokens. 
+>Another place I got stuck was the reasoning to use local storage vs http cookies. I struggled to understand the tradeoffs to both. At the start, from my learning the reasoning to use cookies seemed like they were not worth it, but I learned that there are real security issues to both approaches. My implementation with JWTs and local storage can be breached and attacked by js script attacks, and if I had used a cookies implementation, it is open to cross cookies attack (cross-site request forgery-->CSRF)
