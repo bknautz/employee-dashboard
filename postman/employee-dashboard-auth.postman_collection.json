@@ -6,14 +6,46 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000" },
-    { "key": "employeeAccessToken", "value": "" },
-    { "key": "employeeRefreshToken", "value": "" },
-    { "key": "managerAccessToken", "value": "" },
-    { "key": "managerRefreshToken", "value": "" },
-    { "key": "adminAccessToken", "value": "" },
-    { "key": "adminRefreshToken", "value": "" },
-    { "key": "refreshedAccessToken", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "employeeAccessToken",
+      "value": ""
+    },
+    {
+      "key": "employeeRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "managerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "managerRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "adminRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "refreshedAccessToken",
+      "value": ""
+    },
+    {
+      "key": "createdCourseTitle",
+      "value": ""
+    },
+    {
+      "key": "createdCourseId",
+      "value": ""
+    }
   ],
   "item": [
     {
@@ -39,15 +71,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Postman Employee\",\n  \"email\": \"postman-employee-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"employee\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
@@ -72,15 +115,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Postman Manager\",\n  \"email\": \"postman-manager-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"manager\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
@@ -105,15 +159,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Postman Admin\",\n  \"email\": \"postman-admin-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"admin\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
@@ -139,11 +204,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{employeeAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -164,11 +240,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{managerAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -189,11 +276,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -217,8 +315,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -239,11 +343,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer garbage.token.here" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer garbage.token.here"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -269,11 +384,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{employeeAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/admin-only",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "admin-only"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin-only"
+              ]
             }
           },
           "response": []
@@ -294,11 +420,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{managerAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/admin-only",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "admin-only"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin-only"
+              ]
             }
           },
           "response": []
@@ -319,11 +456,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/admin-only",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "admin-only"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin-only"
+              ]
             }
           },
           "response": []
@@ -351,15 +499,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{employeeRefreshToken}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
             }
           },
           "response": []
@@ -380,11 +539,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{refreshedAccessToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{refreshedAccessToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
@@ -405,15 +575,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
             }
           },
           "response": []
@@ -434,15 +615,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"garbage.token.here\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
             }
           },
           "response": []
@@ -463,15 +655,964 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{employeeAccessToken}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Courses",
+      "item": [
+        {
+          "name": "GET /api/courses with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses as Employee (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has a results array', () => pm.expect(pm.response.json().results).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses as Employee (expect 403 - not admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Course {{$timestamp}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Course {{$timestamp}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses as Admin - valid input (expect 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('createdCourseTitle', data.course.title);",
+                  "pm.collectionVariables.set('createdCourseId', data.course.id);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Message is Course created', () => pm.expect(data.message).to.eql('Course created'));",
+                  "pm.test('Course has an id', () => pm.expect(data.course.id).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Course {{$timestamp}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses as Admin - duplicate title (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Course already exists', () => pm.expect(pm.response.json().error).to.eql('Course already exists'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses as Admin - hours sent as string (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Course {{$timestamp}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": \"10\",\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/courses as Admin - missing title (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - valid id (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returned course matches created course', () => pm.expect(pm.response.json().course.title).to.eql(pm.collectionVariables.get('createdCourseTitle')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Employee (expect 403 - not admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - hours sent as string (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": \"10\",\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course not found', () => pm.expect(pm.response.json().error).to.eql('Course not found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - valid update (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Hours were actually updated to 99', () => pm.expect(pm.response.json().course.hours).to.eql(99));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Employee (expect 403 - not admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - valid delete (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Message is Course Deleted', () => pm.expect(pm.response.json().message).to.eql('Course Deleted'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - confirms course is actually gone (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
             }
           },
           "response": []
