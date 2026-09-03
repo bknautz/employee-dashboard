@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
 const learningPathRoutes = require('./routes/learningPaths');
 const teamRoutes = require('./routes/teams');
+const enrollmentRoutes = require('./routes/enrollments');
 
 const app = express();
 connectDB();
@@ -14,6 +15,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/learning-paths', learningPathRoutes);
 app.use('/api/teams', teamRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 app.get('/', (req, res) => {
   res.json({ status: 'API running' });

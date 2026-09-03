@@ -73,6 +73,22 @@
     {
       "key": "createdTeamName",
       "value": ""
+    },
+    {
+      "key": "employee2AccessToken",
+      "value": ""
+    },
+    {
+      "key": "employee2UserId",
+      "value": ""
+    },
+    {
+      "key": "enrollmentTestCourseId",
+      "value": ""
+    },
+    {
+      "key": "createdEnrollmentId",
+      "value": ""
     }
   ],
   "item": [
@@ -198,6 +214,49 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Postman Admin\",\n  \"email\": \"postman-admin-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Employee 2 (for ownership tests)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('employee2AccessToken', data.accessToken);",
+                  "pm.collectionVariables.set('employee2UserId', data.user.id);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Role in response is employee', () => pm.expect(data.user.role).to.eql('employee'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Employee 2\",\n  \"email\": \"postman-employee2-{{$timestamp}}@example.com\",\n  \"password\": \"testpass123\",\n  \"role\": \"employee\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
@@ -3411,6 +3470,951 @@
                 "api",
                 "teams",
                 "{{createdTeamId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Enrollments",
+      "item": [
+        {
+          "name": "SETUP: POST /api/courses as Admin - create a course to enroll in (expect 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('enrollmentTestCourseId', data.course.id);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Enrollment Test Course {{$timestamp}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Course used only for enrollment tests\",\n  \"hours\": 5,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": \"{{enrollmentTestCourseId}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments as Employee - malformed course id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is an array of Zod issues', () => pm.expect(pm.response.json().error).to.be.an('array'));",
+                  "pm.test('Includes an issue for the course field', () => pm.expect(pm.response.json().error.some((issue) => issue.path.includes('course'))).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": \"not-a-valid-id\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments as Employee - course does not exist (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Course not found', () => pm.expect(pm.response.json().error).to.eql('Course not found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": \"000000000000000000000000\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments as Employee - valid enroll (expect 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('createdEnrollmentId', data.enrollment.id);",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Message is Enrolled in course', () => pm.expect(data.message).to.eql('Enrolled in course'));",
+                  "pm.test('Status defaults to not_started', () => pm.expect(data.enrollment.status).to.eql('not_started'));",
+                  "pm.test('Progress defaults to 0', () => pm.expect(data.enrollment.progressPercent).to.eql(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": \"{{enrollmentTestCourseId}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments as Employee - duplicate enrollment (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Already enrolled in this course', () => pm.expect(pm.response.json().error).to.eql('Already enrolled in this course'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": \"{{enrollmentTestCourseId}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/enrollments/me with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/enrollments/me as Employee (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has a results array', () => pm.expect(pm.response.json().results).to.be.an('array'));",
+                  "pm.test('Course is populated (not a bare id)', () => pm.expect(pm.response.json().results[0].course).to.have.property('title'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 50\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as a different Employee (expect 403 - not the owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee2AccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 50\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as owner - out of range value (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is an array of Zod issues', () => pm.expect(pm.response.json().error).to.be.an('array'));",
+                  "pm.test('Includes an issue for the progressPercent field', () => pm.expect(pm.response.json().error.some((issue) => issue.path.includes('progressPercent'))).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 150\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as owner - valid update (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Progress was actually updated', () => pm.expect(pm.response.json().enrollment.progressPercent).to.eql(50));",
+                  "pm.test('Status became in_progress', () => pm.expect(pm.response.json().enrollment.status).to.eql('in_progress'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 50\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as Manager - not the owner, but role allows it (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Progress was actually updated', () => pm.expect(pm.response.json().enrollment.progressPercent).to.eql(75));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 75\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as owner - nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Enrollment Not Found', () => pm.expect(pm.response.json().error).to.eql('Enrollment Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/000000000000000000000000/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "000000000000000000000000",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 50\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as owner - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Enrollment ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Enrollment ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/not-a-valid-id/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "not-a-valid-id",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 50\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete as a different Employee (expect 403 - not the owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee2AccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete as owner - valid (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status became completed', () => pm.expect(pm.response.json().enrollment.status).to.eql('completed'));",
+                  "pm.test('Progress is 100', () => pm.expect(pm.response.json().enrollment.progressPercent).to.eql(100));",
+                  "pm.test('completedAt is set', () => pm.expect(pm.response.json().enrollment.completedAt).to.not.be.null);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete as owner - already completed (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Enrollment already completed', () => pm.expect(pm.response.json().error).to.eql('Enrollment already completed'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/enrollments/:id/progress as owner - rejected once completed (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Enrollment already completed', () => pm.expect(pm.response.json().error).to.eql('Enrollment already completed'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/{{createdEnrollmentId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "{{createdEnrollmentId}}",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"progressPercent\": 10\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete as Admin - nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Enrollment Not Found', () => pm.expect(pm.response.json().error).to.eql('Enrollment Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/000000000000000000000000/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "000000000000000000000000",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/enrollments/:id/complete as Admin - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Enrollment ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Enrollment ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollments/not-a-valid-id/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrollments",
+                "not-a-valid-id",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CLEANUP: DELETE /api/courses/:id - remove the course created for these tests (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{enrollmentTestCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{enrollmentTestCourseId}}"
               ]
             }
           },
