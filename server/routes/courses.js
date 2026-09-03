@@ -1,6 +1,8 @@
 const express = require('express');
 const requireAuth = require('../middleware/auth');
 const requireRole = require('../middleware/roleCheck');
+const validate = require('../middleware/validate');
+const { courseSchema } = require('../validators/courseValidator');
 const {
   getAllCourses,
   createCourse,
@@ -11,10 +13,11 @@ const {
 
 const router = express.Router();
 
+router.post('/', requireAuth, requireRole('admin'), validate(courseSchema), createCourse);
+router.put('/:id', requireAuth, requireRole('admin'), validate(courseSchema.partial()), updateCourse);
+
 router.get('/', requireAuth, getAllCourses);
-router.post('/', requireAuth, requireRole('admin'), createCourse);
 router.get('/:id', requireAuth, getCourseById);
-router.put('/:id', requireAuth, requireRole('admin'), updateCourse);
 router.delete('/:id', requireAuth, requireRole('admin'), deleteCourse);
 
 module.exports = router;

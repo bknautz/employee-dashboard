@@ -18,19 +18,6 @@ exports.createCourse = async (req, res) => {
   try {
     const { title, provider, description, hours, expirationMonths } = req.body;
 
-    if (
-      typeof title !== "string" ||
-      typeof provider !== "string" ||
-      typeof hours !== "number" ||
-      !Number.isInteger(hours) ||
-      (description !== undefined && typeof description !== "string") ||
-      (expirationMonths !== undefined &&
-        expirationMonths !== null &&
-        typeof expirationMonths !== "number")
-    ) {
-      return res.status(400).json({ error: "Invalid Course Input" });
-    }
-
     const existingCourse = await Course.findOne({ title });
     if (existingCourse) {
       return res.status(400).json({ error: "Course already exists" });
@@ -88,18 +75,6 @@ exports.updateCourse = async (req, res) => {
   try {
     const { title, provider, description, hours, expirationMonths } = req.body;
 
-    if (
-      typeof title !== "string" ||
-      typeof provider !== "string" ||
-      typeof hours !== "number" ||
-      !Number.isInteger(hours) ||
-      (description !== undefined && typeof description !== "string") ||
-      (expirationMonths !== undefined &&
-        expirationMonths !== null &&
-        typeof expirationMonths !== "number")
-    ) {
-      return res.status(400).json({ error: "Invalid Course Input" });
-    }
     const course = await Course.findByIdAndUpdate(
   req.params.id,
   { title, provider, description, hours, expirationMonths },
