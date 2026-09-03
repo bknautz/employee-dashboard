@@ -929,8 +929,10 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const data = pm.response.json();",
                   "pm.test('Status is 400', () => pm.response.to.have.status(400));",
-                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                  "pm.test('Error is an array of Zod issues', () => pm.expect(data.error).to.be.an('array'));",
+                  "pm.test('Includes an issue for the hours field', () => pm.expect(data.error.some((issue) => issue.path.includes('hours'))).to.be.true);"
                 ]
               }
             }
@@ -972,8 +974,10 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const data = pm.response.json();",
                   "pm.test('Status is 400', () => pm.response.to.have.status(400));",
-                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                  "pm.test('Error is an array of Zod issues', () => pm.expect(data.error).to.be.an('array'));",
+                  "pm.test('Includes an issue for the title field', () => pm.expect(data.error.some((issue) => issue.path.includes('title'))).to.be.true);"
                 ]
               }
             }
@@ -1238,8 +1242,10 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const data = pm.response.json();",
                   "pm.test('Status is 400', () => pm.response.to.have.status(400));",
-                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                  "pm.test('Error is an array of Zod issues', () => pm.expect(data.error).to.be.an('array'));",
+                  "pm.test('Includes an issue for the hours field', () => pm.expect(data.error.some((issue) => issue.path.includes('hours'))).to.be.true);"
                 ]
               }
             }
