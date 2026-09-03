@@ -3,6 +3,8 @@ const express = require('express');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
+const learningPathRoutes = require('./routes/learningPaths');
+const teamRoutes = require('./routes/teams');
 
 const app = express();
 connectDB();
@@ -10,6 +12,8 @@ connectDB();
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/learning-paths', learningPathRoutes);
+app.use('/api/teams', teamRoutes);
 
 app.get('/', (req, res) => {
   res.json({ status: 'API running' });
