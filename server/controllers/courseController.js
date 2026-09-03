@@ -107,16 +107,36 @@ exports.updateCourse = async (req, res) => {
 );
 
     if (!course) {
-      return res.status(404).json({ message: "Course not found" });
+      return res.status(404).json({ error: "Course not found" });
     }
     res.status(200).json({
       message: "Courses Updated",
       course,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+   if (err.name === "CastError") {
+      res.status(400).json({ error: "Invalid Course ID" });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 // DELETE /api/courses/:id
-exports.deleteCourse = async (req, res) => {};
+exports.deleteCourse = async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.id);
+    if (!course) {
+      return res.status(404).json({ error: "Course Not Found" });
+    }
+    res.status(200).json({
+      message: "Course Deleted",
+    });
+  } catch (err) {
+    if (err.name === "CastError") {
+      res.status(400).json({ error: "Invalid Course ID" });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+};

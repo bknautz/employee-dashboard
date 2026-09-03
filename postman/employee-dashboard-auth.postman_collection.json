@@ -41,6 +41,10 @@
     {
       "key": "createdCourseTitle",
       "value": ""
+    },
+    {
+      "key": "createdCourseId",
+      "value": ""
     }
   ],
   "item": [
@@ -837,6 +841,7 @@
                 "exec": [
                   "const data = pm.response.json();",
                   "pm.collectionVariables.set('createdCourseTitle', data.course.title);",
+                  "pm.collectionVariables.set('createdCourseId', data.course.id);",
                   "pm.test('Status is 201', () => pm.response.to.have.status(201));",
                   "pm.test('Message is Course created', () => pm.expect(data.message).to.eql('Course created'));",
                   "pm.test('Course has an id', () => pm.expect(data.course.id).to.exist);"
@@ -998,6 +1003,616 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": 10,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - valid id (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returned course matches created course', () => pm.expect(pm.response.json().course.title).to.eql(pm.collectionVariables.get('createdCourseTitle')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Employee (expect 403 - not admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - hours sent as string (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course Input', () => pm.expect(pm.response.json().error).to.eql('Invalid Course Input'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Test course\",\n  \"hours\": \"10\",\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course not found', () => pm.expect(pm.response.json().error).to.eql('Course not found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/courses/:id as Admin - valid update (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Hours were actually updated to 99', () => pm.expect(pm.response.json().course.hours).to.eql(99));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{createdCourseTitle}}\",\n  \"provider\": \"AWS\",\n  \"description\": \"Updated test course\",\n  \"hours\": 99,\n  \"expirationMonths\": 12\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id with no token (expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error is No token provided', () => pm.expect(pm.response.json().error).to.eql('No token provided'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Employee (expect 403 - not admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Error is Insufficient permissions', () => pm.expect(pm.response.json().error).to.eql('Insufficient permissions'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - well-formed but nonexistent id (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "000000000000000000000000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - malformed id (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error is Invalid Course ID', () => pm.expect(pm.response.json().error).to.eql('Invalid Course ID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/not-a-valid-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "not-a-valid-id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/courses/:id as Admin - valid delete (expect 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Message is Course Deleted', () => pm.expect(pm.response.json().message).to.eql('Course Deleted'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/courses/:id as Employee - confirms course is actually gone (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Error is Course Not Found', () => pm.expect(pm.response.json().error).to.eql('Course Not Found'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/{{createdCourseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "courses",
+                "{{createdCourseId}}"
+              ]
             }
           },
           "response": []
