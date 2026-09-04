@@ -4,7 +4,7 @@ const User = require("../models/User");
 const MANAGER_PROJECTION = "name email role";
 
 // GET /api/teams
-exports.getAllTeams = async (req, res) => {
+exports.getAllTeams = async (req, res, next) => {
   try {
     const results = await Team.find().populate("manager", MANAGER_PROJECTION);
     res.status(200).json({
@@ -12,12 +12,12 @@ exports.getAllTeams = async (req, res) => {
       results,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // POST /api/teams
-exports.createTeam = async (req, res) => {
+exports.createTeam = async (req, res, next) => {
   try {
     const { name, manager } = req.body;
 
@@ -46,16 +46,13 @@ exports.createTeam = async (req, res) => {
       },
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Manager ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Manager ID";
+    next(err);
   }
 };
 
 // GET /api/teams/:id
-exports.getTeamById = async (req, res) => {
+exports.getTeamById = async (req, res, next) => {
   try {
     const team = await Team.findById(req.params.id).populate("manager", MANAGER_PROJECTION);
     if (!team) {
@@ -66,16 +63,13 @@ exports.getTeamById = async (req, res) => {
       team,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Team ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Team ID";
+    next(err);
   }
 };
 
 // PUT /api/teams/:id
-exports.updateTeam = async (req, res) => {
+exports.updateTeam = async (req, res, next) => {
   try {
     const { name, manager } = req.body;
 
@@ -104,16 +98,13 @@ exports.updateTeam = async (req, res) => {
       team,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Team ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Team ID";
+    next(err);
   }
 };
 
 // DELETE /api/teams/:id
-exports.deleteTeam = async (req, res) => {
+exports.deleteTeam = async (req, res, next) => {
   try {
     const team = await Team.findByIdAndDelete(req.params.id);
     if (!team) {
@@ -123,10 +114,7 @@ exports.deleteTeam = async (req, res) => {
       message: "Team Deleted",
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Team ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Team ID";
+    next(err);
   }
 };

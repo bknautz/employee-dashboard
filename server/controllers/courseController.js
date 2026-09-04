@@ -1,7 +1,7 @@
 const Course = require("../models/Course");
 
 // GET /api/courses
-exports.getAllCourses = async (req, res) => {
+exports.getAllCourses = async (req, res, next) => {
   try {
     const results = await Course.find();
     res.status(200).json({
@@ -9,12 +9,12 @@ exports.getAllCourses = async (req, res) => {
       results,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // POST /api/courses
-exports.createCourse = async (req, res) => {
+exports.createCourse = async (req, res, next) => {
   try {
     const { title, provider, description, hours, expirationMonths } = req.body;
 
@@ -46,12 +46,12 @@ exports.createCourse = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // GET /api/courses/:id
-exports.getCourseById = async (req, res) => {
+exports.getCourseById = async (req, res, next) => {
   try {
     const course = await Course.findById(req.params.id);
     if (!course) {
@@ -62,24 +62,21 @@ exports.getCourseById = async (req, res) => {
       course,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Course ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Course ID";
+    next(err);
   }
 };
 
 // PUT /api/courses/:id
-exports.updateCourse = async (req, res) => {
+exports.updateCourse = async (req, res, next) => {
   try {
     const { title, provider, description, hours, expirationMonths } = req.body;
 
     const course = await Course.findByIdAndUpdate(
-  req.params.id,
-  { title, provider, description, hours, expirationMonths },
-  { new: true }
-);
+      req.params.id,
+      { title, provider, description, hours, expirationMonths },
+      { new: true }
+    );
 
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
@@ -89,16 +86,13 @@ exports.updateCourse = async (req, res) => {
       course,
     });
   } catch (err) {
-   if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Course ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Course ID";
+    next(err);
   }
 };
 
 // DELETE /api/courses/:id
-exports.deleteCourse = async (req, res) => {
+exports.deleteCourse = async (req, res, next) => {
   try {
     const course = await Course.findByIdAndDelete(req.params.id);
     if (!course) {
@@ -108,10 +102,7 @@ exports.deleteCourse = async (req, res) => {
       message: "Course Deleted",
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Course ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Course ID";
+    next(err);
   }
 };

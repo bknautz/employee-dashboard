@@ -5,7 +5,7 @@ const canModify = (req, enrollment) =>
   enrollment.user.toString() === req.user.userId || ["admin", "manager"].includes(req.user.role);
 
 // POST /api/enrollments
-exports.enroll = async (req, res) => {
+exports.enroll = async (req, res, next) => {
   try {
     const { course } = req.body;
 
@@ -28,18 +28,14 @@ exports.enroll = async (req, res) => {
       },
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Course ID" });
-    } else if (err.code === 11000) {
-      res.status(400).json({ error: "Already enrolled in this course" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Course ID";
+    err.duplicateMessage = "Already enrolled in this course";
+    next(err);
   }
 };
 
 // GET /api/enrollments/me
-exports.getMyEnrollments = async (req, res) => {
+exports.getMyEnrollments = async (req, res, next) => {
   try {
     const results = await Enrollment.find({ user: req.user.userId }).populate("course");
     res.status(200).json({
@@ -47,12 +43,12 @@ exports.getMyEnrollments = async (req, res) => {
       results,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // PATCH /api/enrollments/:id/progress
-exports.updateProgress = async (req, res) => {
+exports.updateProgress = async (req, res, next) => {
   try {
     const { progressPercent } = req.body;
 
@@ -78,16 +74,13 @@ exports.updateProgress = async (req, res) => {
       enrollment,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Enrollment ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Enrollment ID";
+    next(err);
   }
 };
 
 // POST /api/enrollments/:id/complete
-exports.markComplete = async (req, res) => {
+exports.markComplete = async (req, res, next) => {
   try {
     const enrollment = await Enrollment.findById(req.params.id);
     if (!enrollment) {
@@ -112,10 +105,7 @@ exports.markComplete = async (req, res) => {
       enrollment,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Enrollment ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Enrollment ID";
+    next(err);
   }
 };
