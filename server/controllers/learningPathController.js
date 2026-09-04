@@ -2,7 +2,7 @@ const LearningPath = require("../models/LearningPath");
 const Course = require("../models/Course");
 
 // GET /api/learning-paths
-exports.getAllLearningPaths = async (req, res) => {
+exports.getAllLearningPaths = async (req, res, next) => {
   try {
     const results = await LearningPath.find().populate("courses");
     res.status(200).json({
@@ -10,12 +10,12 @@ exports.getAllLearningPaths = async (req, res) => {
       results,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // POST /api/learning-paths
-exports.createLearningPath = async (req, res) => {
+exports.createLearningPath = async (req, res, next) => {
   try {
     const { title, description, courses } = req.body;
 
@@ -44,12 +44,12 @@ exports.createLearningPath = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // GET /api/learning-paths/:id
-exports.getLearningPathById = async (req, res) => {
+exports.getLearningPathById = async (req, res, next) => {
   try {
     const learningPath = await LearningPath.findById(req.params.id).populate("courses");
     if (!learningPath) {
@@ -60,16 +60,13 @@ exports.getLearningPathById = async (req, res) => {
       learningPath,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Learning Path ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Learning Path ID";
+    next(err);
   }
 };
 
 // PUT /api/learning-paths/:id
-exports.updateLearningPath = async (req, res) => {
+exports.updateLearningPath = async (req, res, next) => {
   try {
     const { title, description, courses } = req.body;
 
@@ -95,16 +92,13 @@ exports.updateLearningPath = async (req, res) => {
       learningPath,
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Learning Path ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Learning Path ID";
+    next(err);
   }
 };
 
 // DELETE /api/learning-paths/:id
-exports.deleteLearningPath = async (req, res) => {
+exports.deleteLearningPath = async (req, res, next) => {
   try {
     const learningPath = await LearningPath.findByIdAndDelete(req.params.id);
     if (!learningPath) {
@@ -114,10 +108,7 @@ exports.deleteLearningPath = async (req, res) => {
       message: "Learning Path Deleted",
     });
   } catch (err) {
-    if (err.name === "CastError") {
-      res.status(400).json({ error: "Invalid Learning Path ID" });
-    } else {
-      res.status(500).json({ error: err.message });
-    }
+    err.invalidIdMessage = "Invalid Learning Path ID";
+    next(err);
   }
 };
