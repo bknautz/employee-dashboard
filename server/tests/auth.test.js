@@ -199,4 +199,20 @@ describe('Auth flow', () => {
     expect(expiredRes.status).toBe(401);
     expect(expiredRes.body.error).toBe('Invalid or expired refresh token');
   });
+
+  test('POST /refresh: rejects an access token submitted as a refresh token', async () => {
+    const account = await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: account.body.accessToken });
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('Invalid or expired refresh token');
+  });
 });
