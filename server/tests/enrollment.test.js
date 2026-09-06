@@ -72,6 +72,20 @@ describe('Enrollment logic', () => {
     expect(res.body.error).toBe('Course not found');
   });
 
+  test('enroll: rejects a malformed course id before ever checking existence', async () => {
+    const employee = await registerUser('employee');
+
+    const res = await request(app)
+      .post('/api/enrollments')
+      .set('Authorization', `Bearer ${employee.accessToken}`)
+      .send({ course: 'not-a-valid-id' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toEqual(
+      expect.arrayContaining([expect.objectContaining({ path: ['course'] })])
+    );
+  });
+
   test('enroll: rejects a duplicate (user, course) enrollment', async () => {
     const admin = await registerUser('admin');
     const employee = await registerUser('employee');
@@ -135,6 +149,28 @@ describe('Enrollment logic', () => {
     expect(res.status).toBe(200);
     expect(res.body.enrollment.progressPercent).toBe(50);
     expect(res.body.enrollment.status).toBe('in_progress');
+  });
+
+  test('PATCH /:id/progress: rejects a progressPercent outside 0-100', async () => {
+    const admin = await registerUser('admin');
+    const employee = await registerUser('employee');
+    const courseId = await createTestCourse(admin.accessToken);
+
+    const enrollRes = await request(app)
+      .post('/api/enrollments')
+      .set('Authorization', `Bearer ${employee.accessToken}`)
+      .send({ course: courseId });
+    const enrollmentId = enrollRes.body.enrollment.id;
+
+    const res = await request(app)
+      .patch(`/api/enrollments/${enrollmentId}/progress`)
+      .set('Authorization', `Bearer ${employee.accessToken}`)
+      .send({ progressPercent: 150 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toEqual(
+      expect.arrayContaining([expect.objectContaining({ path: ['progressPercent'] })])
+    );
   });
 
   test('PATCH /:id/progress: rejects a user who is not the owner and not a manager/admin', async () => {
