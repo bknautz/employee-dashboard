@@ -1,5 +1,6 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const app = require('../app');
 const User = require('../models/User');
 const { connect, clearDatabase, closeDatabase } = require('./testDb');
@@ -101,10 +102,59 @@ describe('Auth flow', () => {
    
 
   });
-  test.todo('requireAuth: rejects a request with no Authorization header');
-  test.todo('requireAuth: rejects an expired or malformed token');
-  test.todo('requireAuth: attaches req.user and allows the request through on a valid token');
-  test.todo('requireRole: rejects a role not in the allowed list with 403');
+  test('requireAuth: rejects a request with no Authorization header', async () => {
+    const res = await request(app).get('/api/courses');
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('No token provided');
+  });
+
+  test('requireAuth: rejects an expired or malformed token', async () => {
+    const malformedRes = await request(app)
+      .get('/api/courses')
+      .set('Authorization', 'Bearer not-a-real-token');
+
+    expect(malformedRes.status).toBe(401);
+    expect(malformedRes.body.error).toBe('Invalid or expired token');
+
+    const expiredToken = jwt.sign(
+      { userId: 'irrelevant-id', role: 'employee' },
+      process.env.JWT_ACCESS_SECRET,
+      { expiresIn: '-1s' }
+    );
+
+    const expiredRes = await request(app)
+      .get('/api/courses')
+      .set('Authorization', `Bearer ${expiredToken}`);
+
+    expect(expiredRes.status).toBe(401);
+    expect(expiredRes.body.error).toBe('Invalid or expired token');
+  });
+  test('requireAuth: attaches req.user and allows the request through on a valid token', async () => {
+    const account = await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+    const res = await request(app)
+      .get('/api/courses')
+      .set('Authorization', 'Bearer ' + account.body.accessToken);
+    expect(res.status).toBe(200);
+  });
+  test('requireRole: rejects a role not in the allowed list with 403', async () => {
+    const account = await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+    const res = await request(app)
+      .post('/api/courses')
+      .set('Authorization', 'Bearer ' + account.body.accessToken)
+      .send({ title: "fake", provider: "fake", description: "fake", hours: 10, expirationMonths : 12})
+    expect(res.status).toBe(403);
+  });
   test.todo('POST /refresh: issues a new access token for a valid refresh token');
   test.todo('POST /refresh: rejects a missing, garbage, or expired refresh token');
 });
