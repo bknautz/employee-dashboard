@@ -155,6 +155,48 @@ describe('Auth flow', () => {
       .send({ title: "fake", provider: "fake", description: "fake", hours: 10, expirationMonths : 12})
     expect(res.status).toBe(403);
   });
-  test.todo('POST /refresh: issues a new access token for a valid refresh token');
-  test.todo('POST /refresh: rejects a missing, garbage, or expired refresh token');
+  test('POST /refresh: issues a new access token for a valid refresh token', async () => {
+    const account = await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: account.body.refreshToken });
+
+    expect(res.status).toBe(200);
+    expect(res.body.accessToken).toEqual(expect.any(String));
+
+    const protectedRes = await request(app)
+      .get('/api/courses')
+      .set('Authorization', `Bearer ${res.body.accessToken}`);
+
+    expect(protectedRes.status).toBe(200);
+  });
+
+  test('POST /refresh: rejects a missing, garbage, or expired refresh token', async () => {
+    const noTokenRes = await request(app).post('/api/auth/refresh').send({});
+    expect(noTokenRes.status).toBe(401);
+    expect(noTokenRes.body.error).toBe('No refresh token provided');
+
+    const garbageRes = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: 'not-a-real-token' });
+    expect(garbageRes.status).toBe(401);
+    expect(garbageRes.body.error).toBe('Invalid or expired refresh token');
+
+    const expiredToken = jwt.sign(
+      { userId: 'irrelevant-id' },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '-1s' }
+    );
+    const expiredRes = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: expiredToken });
+    expect(expiredRes.status).toBe(401);
+    expect(expiredRes.body.error).toBe('Invalid or expired refresh token');
+  });
 });
