@@ -58,7 +58,49 @@ describe('Auth flow', () => {
     expect(userInDb.role).toBe('employee');
 
   });
-  test.todo('login: returns the same 401 for wrong password and unknown email');
+  test('login: signs in correctly and mints access and refresh token', async () =>{
+     await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'test@example.com',
+      password: 'testpass123',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.accessToken).toEqual(expect.any(String));
+    expect(res.body.refreshToken).toEqual(expect.any(String));
+
+  });
+  test('login: returns the same 401 for wrong password and unknown email', async () =>{
+     await request(app).post('/api/auth/register').send({
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123',
+      role: 'employee',
+    });
+
+    const resPass = await request(app).post('/api/auth/login').send({
+      email: 'test@example.com',
+      password: 'test123',
+    });
+    expect(resPass.status).toBe(401);
+
+
+    const resEmail = await request(app).post('/api/auth/login').send({
+      email: 'notanemail',
+      password: 'test123',
+    });
+
+    expect(resEmail.status).toBe(401);
+    expect(resEmail.status).toBe(resPass.status);
+   
+
+  });
   test.todo('requireAuth: rejects a request with no Authorization header');
   test.todo('requireAuth: rejects an expired or malformed token');
   test.todo('requireAuth: attaches req.user and allows the request through on a valid token');
