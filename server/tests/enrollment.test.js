@@ -246,4 +246,50 @@ describe('Enrollment logic', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('Enrollment already completed');
   });
+
+  test('PATCH /:id/progress: rejects a malformed enrollment id', async () => {
+    const employee = await registerUser('employee');
+
+    const res = await request(app)
+      .patch('/api/enrollments/not-a-valid-id/progress')
+      .set('Authorization', `Bearer ${employee.accessToken}`)
+      .send({ progressPercent: 50 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid Enrollment ID');
+  });
+
+  test('PATCH /:id/progress: rejects a well-formed but nonexistent enrollment id', async () => {
+    const employee = await registerUser('employee');
+
+    const res = await request(app)
+      .patch('/api/enrollments/000000000000000000000000/progress')
+      .set('Authorization', `Bearer ${employee.accessToken}`)
+      .send({ progressPercent: 50 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('Enrollment Not Found');
+  });
+
+  test('POST /:id/complete: rejects a malformed enrollment id', async () => {
+    const employee = await registerUser('employee');
+
+    const res = await request(app)
+      .post('/api/enrollments/not-a-valid-id/complete')
+      .set('Authorization', `Bearer ${employee.accessToken}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid Enrollment ID');
+  });
+
+  test('POST /:id/complete: rejects a well-formed but nonexistent enrollment id', async () => {
+    const employee = await registerUser('employee');
+
+    const res = await request(app)
+      .post('/api/enrollments/000000000000000000000000/complete')
+      .set('Authorization', `Bearer ${employee.accessToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('Enrollment Not Found');
+  });
 });
