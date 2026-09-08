@@ -1,11 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerSchema } from './authSchemas';
 import { useAuth } from '../../context/useAuth';
 
 function RegisterPage() {
   const { register: registerUser } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -17,9 +18,14 @@ function RegisterPage() {
   });
 
   const onSubmit = async (data) => {
-    // TODO: replace with registerUser(data), then navigate on success.
-    // On failure (400 duplicate email, etc.): setError('root', { message: ... }).
-    console.log('TODO: implement register', { registerUser, setError, data });
+    try {
+      await registerUser(data.name, data.email, data.password, data.role);
+      navigate('/');
+    } catch (err) {
+      setError('root', {
+        message: err.response?.data?.error || 'Registration failed',
+      });
+    }
   };
 
   return (

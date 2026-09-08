@@ -1,11 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from './authSchemas';
 import { useAuth } from '../../context/useAuth';
 
 function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -14,9 +15,14 @@ function LoginPage() {
   } = useForm({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data) => {
-    // TODO: replace with login(data.email, data.password), then navigate on success.
-    // On a failed (401) login: setError('root', { message: 'Invalid credentials' }).
-    console.log('TODO: implement login', { login, setError, data });
+    try {
+      await login(data.email, data.password);
+      navigate('/');
+    } catch (err) {
+      setError('root', {
+        message: err.response?.data?.error || 'Login failed',
+      });
+    }
   };
 
   return (
