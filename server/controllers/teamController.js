@@ -1,7 +1,27 @@
 const Team = require("../models/Team");
 const User = require("../models/User");
+const Enrollment = require("../models/Enrollment");
 
 const MANAGER_PROJECTION = "name email role";
+
+async function buildTeamProgress(team) {
+  const members = await User.find({ team: team._id }).select("name email role");
+
+  const memberProgress = await Promise.all(
+    members.map(async (member) => {
+      const enrollments = await Enrollment.find({ user: member._id }).populate("course");
+      return {
+        user: { id: member._id, name: member.name, email: member.email, role: member.role },
+        enrollments,
+      };
+    })
+  );
+
+  return {
+    team: { id: team._id, name: team.name, manager: team.manager },
+    members: memberProgress,
+  };
+}
 
 // GET /api/teams
 exports.getAllTeams = async (req, res, next) => {
@@ -99,6 +119,53 @@ exports.updateTeam = async (req, res, next) => {
     });
   } catch (err) {
     err.invalidIdMessage = "Invalid Team ID";
+    next(err);
+  }
+};
+
+// GET /api/teams/:id/progress
+exports.getTeamProgress = async (req, res, next) => {
+  try {
+    const team = await Team.findById(req.params.id).populate("manager", MANAGER_PROJECTION);
+    if (!team) {
+      return res.status(404).json({ error: "Team Not Found" });
+    }
+
+    const isOwnTeam = team.manager && team.manager._id.toString() === req.user.userId;
+    if (req.user.role !== "admin" && !(req.user.role === "manager" && isOwnTeam)) {
+      return res.status(403).json({ error: "Insufficient permissions" });
+    }
+
+    const progress = await buildTeamProgress(team);
+
+    res.status(200).json({
+      message: "Team Progress Retrieved",
+      ...progress,
+    });
+  } catch (err) {
+    err.invalidIdMessage = "Invalid Team ID";
+    next(err);
+  }
+};
+
+// GET /api/teams/mine/progress
+exports.getMyTeamProgress = async (req, res, next) => {
+  try {
+    const team = await Team.findOne({ manager: req.user.userId }).populate(
+      "manager",
+      MANAGER_PROJECTION
+    );
+    if (!team) {
+      return res.status(404).json({ error: "You do not manage a team" });
+    }
+
+    const progress = await buildTeamProgress(team);
+
+    res.status(200).json({
+      message: "Team Progress Retrieved",
+      ...progress,
+    });
+  } catch (err) {
     next(err);
   }
 };
