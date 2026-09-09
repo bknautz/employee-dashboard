@@ -4,7 +4,7 @@ import { useCourses } from '../../hooks/useCourses';
 import { useEnroll } from '../../hooks/useEnroll';
 import EnrollmentRow from './EnrollmentRow';
 
-function DashboardPage() {
+function EmployeeDashboardPage() {
   const { user, logout } = useAuth();
   const {
     data: enrollments,
@@ -76,4 +76,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default EmployeeDashboardPage;

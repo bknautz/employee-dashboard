@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
-import DashboardPage from './features/dashboard/DashboardPage';
+import RoleDashboard from './features/dashboard/RoleDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<DashboardPage />} />
+        <Route path="/" element={<RoleDashboard />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
