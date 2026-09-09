@@ -1,5 +1,6 @@
 import { useAuth } from '../../context/useAuth';
 import { useMyTeamProgress } from '../../hooks/useMyTeamProgress';
+import TeamStatusChart from './TeamStatusChart';
 
 function ManagerDashboardPage() {
   const { user, logout } = useAuth();
@@ -27,6 +28,8 @@ function ManagerDashboardPage() {
           <h2>{data.team.name}</h2>
 
           {data.members.length === 0 && <p>No employees on this team yet.</p>}
+
+          {data.members.length > 0 && <TeamStatusChart members={data.members} />}
 
           {data.members.length > 0 && (
             <table>
