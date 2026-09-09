@@ -1,4 +1,7 @@
 import { useAuth } from '../../context/useAuth';
+import CourseManager from './CourseManager';
+import LearningPathManager from './LearningPathManager';
+import EmployeeAssignment from './EmployeeAssignment';
 
 function AdminDashboardPage() {
   const { user, logout } = useAuth();
@@ -12,7 +15,10 @@ function AdminDashboardPage() {
       <button type="button" onClick={logout}>
         Log out
       </button>
-      <p>Placeholder - manage courses/paths, assign employees to teams.</p>
+
+      <CourseManager />
+      <LearningPathManager />
+      <EmployeeAssignment />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useAuth } from '../../context/useAuth';
 import EmployeeDashboardPage from './EmployeeDashboardPage';
 import ManagerDashboardPage from './ManagerDashboardPage';
-import AdminDashboardPage from './AdminDashboardPage';
+import AdminDashboardPage from '../admin/AdminDashboardPage';
 
 function RoleDashboard() {
   const { user } = useAuth();
