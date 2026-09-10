@@ -25,7 +25,7 @@ export function computeStatusCounts(members) {
     }
   }
   const ret = Object.entries(dict)
-    .filter(([name, value]) => value > 0)
+    .filter(([, value]) => value > 0)
     .map(([name, value]) => {
       return { name: name, value: value };
     });
