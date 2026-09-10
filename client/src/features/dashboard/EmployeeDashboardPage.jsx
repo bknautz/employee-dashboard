@@ -1,8 +1,14 @@
+import { GraduationCap, Compass } from 'lucide-react';
 import { useMyEnrollments } from '../../hooks/useMyEnrollments';
 import { useCourses } from '../../hooks/useCourses';
 import { useEnroll } from '../../hooks/useEnroll';
 import AppShell from '../../components/AppShell';
 import EnrollmentRow from './EnrollmentRow';
+
+const NAV_ITEMS = [
+  { label: 'My Courses', icon: GraduationCap, href: '#my-courses' },
+  { label: 'Browse Courses', icon: Compass, href: '#browse-courses' },
+];
 
 function EmployeeDashboardPage() {
   const {
@@ -20,8 +26,8 @@ function EmployeeDashboardPage() {
   );
 
   return (
-    <AppShell title="My Courses">
-      <section className="mb-10">
+    <AppShell title="My Courses" navItems={NAV_ITEMS}>
+      <section id="my-courses" className="mb-10 scroll-mt-8">
         {enrollmentsLoading && <p className="text-sm text-fg-muted">Loading your courses...</p>}
 
         {enrollmentsError && (
@@ -41,7 +47,7 @@ function EmployeeDashboardPage() {
         )}
       </section>
 
-      <section>
+      <section id="browse-courses" className="scroll-mt-8">
         <h2 className="mb-3 text-sm font-medium text-fg-muted">Browse Courses</h2>
 
         {coursesLoading && <p className="text-sm text-fg-muted">Loading courses...</p>}
