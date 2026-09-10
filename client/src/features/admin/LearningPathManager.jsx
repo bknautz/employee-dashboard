@@ -4,6 +4,7 @@ import { useCreateLearningPath } from '../../hooks/useCreateLearningPath';
 import { useDeleteLearningPath } from '../../hooks/useDeleteLearningPath';
 import { useCourses } from '../../hooks/useCourses';
 import { getErrorMessage } from '../../utils/getErrorMessage';
+import { inputClass } from '../../utils/formStyles';
 
 const emptyForm = { title: '', description: '', courses: [] };
 
@@ -18,9 +19,13 @@ function LearningPathManager() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCoursesChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-    setForm({ ...form, courses: selected });
+  const handleCourseToggle = (courseId) => {
+    setForm((prev) => ({
+      ...prev,
+      courses: prev.courses.includes(courseId)
+        ? prev.courses.filter((id) => id !== courseId)
+        : [...prev.courses, courseId],
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -31,21 +36,23 @@ function LearningPathManager() {
   };
 
   return (
-    <section>
-      <h3>Learning Paths</h3>
-
-      {isLoading && <p>Loading learning paths...</p>}
-      {isError && <p>Couldn't load learning paths.</p>}
+    <div className="space-y-4">
+      {isLoading && <p className="text-sm text-fg-muted">Loading learning paths...</p>}
+      {isError && <p className="text-sm text-warn">Couldn't load learning paths.</p>}
 
       {learningPaths?.length > 0 && (
-        <ul>
+        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {learningPaths.map((path) => (
-            <li key={path._id}>
-              <strong>{path.title}</strong> - {path.courses.length} course(s)
+            <li key={path._id} className="flex items-center justify-between px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-fg">{path.title}</p>
+                <p className="text-xs text-fg-subtle">{path.courses.length} course(s)</p>
+              </div>
               <button
                 type="button"
                 disabled={deleteLearningPath.isPending}
                 onClick={() => deleteLearningPath.mutate(path._id)}
+                className="rounded-md border border-border px-3 py-1 text-xs font-medium text-fg-muted transition-colors hover:border-warn hover:text-warn disabled:opacity-50"
               >
                 Delete
               </button>
@@ -54,34 +61,59 @@ function LearningPathManager() {
         </ul>
       )}
 
-      <h4>Add a Learning Path</h4>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-3 rounded-lg border border-border bg-surface p-4"
+      >
+        <p className="text-xs font-medium uppercase tracking-wide text-fg-subtle">
+          Add a Learning Path
+        </p>
         <input
           name="title"
           placeholder="Title"
           value={form.title}
           onChange={handleTextChange}
           required
+          className={inputClass}
         />
         <input
           name="description"
           placeholder="Description"
           value={form.description}
           onChange={handleTextChange}
+          className={inputClass}
         />
-        <select multiple value={form.courses} onChange={handleCoursesChange}>
+        <div className="max-h-40 space-y-1.5 overflow-y-auto rounded-md border border-border bg-bg p-3">
+          {courses?.length === 0 && (
+            <p className="text-sm text-fg-subtle">No courses yet - add one above first.</p>
+          )}
           {courses?.map((course) => (
-            <option key={course._id} value={course._id}>
+            <label
+              key={course._id}
+              className="flex cursor-pointer items-center gap-2 text-sm text-fg"
+            >
+              <input
+                type="checkbox"
+                checked={form.courses.includes(course._id)}
+                onChange={() => handleCourseToggle(course._id)}
+                className="h-4 w-4 rounded border-border bg-bg accent-accent"
+              />
               {course.title}
-            </option>
+            </label>
           ))}
-        </select>
-        <button type="submit" disabled={createLearningPath.isPending}>
+        </div>
+        <button
+          type="submit"
+          disabled={createLearningPath.isPending}
+          className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
+        >
           Create Learning Path
         </button>
-        {createLearningPath.isError && <p>{getErrorMessage(createLearningPath.error)}</p>}
+        {createLearningPath.isError && (
+          <p className="text-sm text-warn">{getErrorMessage(createLearningPath.error)}</p>
+        )}
       </form>
-    </section>
+    </div>
   );
 }
 

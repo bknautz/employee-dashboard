@@ -1,4 +1,6 @@
 const Course = require("../models/Course");
+const Enrollment = require("../models/Enrollment");
+const LearningPath = require("../models/LearningPath");
 
 // GET /api/courses
 exports.getAllCourses = async (req, res, next) => {
@@ -94,10 +96,27 @@ exports.updateCourse = async (req, res, next) => {
 // DELETE /api/courses/:id
 exports.deleteCourse = async (req, res, next) => {
   try {
-    const course = await Course.findByIdAndDelete(req.params.id);
+    const course = await Course.findById(req.params.id);
     if (!course) {
       return res.status(404).json({ error: "Course Not Found" });
     }
+
+    const enrollmentCount = await Enrollment.countDocuments({ course: course._id });
+    if (enrollmentCount > 0) {
+      return res.status(400).json({
+        error: `Cannot delete: ${enrollmentCount} employee(s) are enrolled in this course`,
+      });
+    }
+
+    const pathCount = await LearningPath.countDocuments({ courses: course._id });
+    if (pathCount > 0) {
+      return res.status(400).json({
+        error: `Cannot delete: this course is part of ${pathCount} learning path(s)`,
+      });
+    }
+
+    await Course.findByIdAndDelete(req.params.id);
+
     res.status(200).json({
       message: "Course Deleted",
     });

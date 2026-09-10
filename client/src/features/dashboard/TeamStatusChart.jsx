@@ -1,11 +1,10 @@
 import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { computeStatusCounts } from '../../utils/computeStatusCounts';
 
-// Provisional status-progression palette (neutral -> in-progress -> good),
+// Matches the --color-good/--color-neutral/--color-warn tokens in index.css,
 // order matched to computeStatusCounts' dict insertion order: Completed,
-// Not Started, In Progress. Treat as a placeholder - not run through a
-// contrast/colorblind-safety check.
-const STATUS_COLORS = ['#22c55e', '#9ca3af', '#f59e0b'];
+// Not Started, In Progress.
+const STATUS_COLORS = ['#22c55e', '#71717a', '#f59e0b'];
 
 function TeamStatusChart({ members }) {
   // Pie's <Cell> is deprecated as of Recharts 3 (removed in 4.0) - the
@@ -20,8 +19,16 @@ function TeamStatusChart({ members }) {
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie data={data} dataKey="value" nameKey="name" />
-        <Tooltip />
-        <Legend />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1c1c20',
+            border: '1px solid #27272a',
+            borderRadius: '8px',
+            color: '#f4f4f5',
+          }}
+          itemStyle={{ color: '#f4f4f5' }}
+        />
+        <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: '14px' }} />
       </PieChart>
     </ResponsiveContainer>
   );
