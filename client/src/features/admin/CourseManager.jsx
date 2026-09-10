@@ -61,6 +61,10 @@ function CourseManager() {
         </ul>
       )}
 
+      {deleteCourse.isError && (
+        <p className="text-sm text-warn">{getErrorMessage(deleteCourse.error)}</p>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="space-y-3 rounded-lg border border-border bg-surface p-4"

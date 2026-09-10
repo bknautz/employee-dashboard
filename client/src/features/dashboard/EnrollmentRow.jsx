@@ -10,6 +10,19 @@ function EnrollmentRow({ enrollment }) {
 
   const isCompleted = enrollment.status === 'completed';
 
+  // Defense in depth: the backend now blocks deleting a course that has
+  // enrollments, but any enrollment created before that guard existed could
+  // still have course: null (the referenced course was already deleted).
+  if (!enrollment.course) {
+    return (
+      <li className="px-4 py-3">
+        <p className="text-sm text-fg-subtle">
+          This course is no longer available (it was removed by an admin).
+        </p>
+      </li>
+    );
+  }
+
   return (
     <li className="px-4 py-3">
       <div className="flex items-center justify-between gap-4">

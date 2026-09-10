@@ -56,13 +56,19 @@ function ManagerDashboardPage() {
                         )}
                         {member.enrollments.length > 0 && (
                           <ul className="space-y-1.5">
-                            {member.enrollments.map((enrollment) => (
-                              <li key={enrollment._id} className="flex items-center gap-2">
-                                <span className="text-fg">{enrollment.course.title}</span>
-                                <StatusBadge status={enrollment.status} />
-                                <span className="text-fg-subtle">{enrollment.progressPercent}%</span>
-                              </li>
-                            ))}
+                            {member.enrollments.map((enrollment) =>
+                              enrollment.course ? (
+                                <li key={enrollment._id} className="flex items-center gap-2">
+                                  <span className="text-fg">{enrollment.course.title}</span>
+                                  <StatusBadge status={enrollment.status} />
+                                  <span className="text-fg-subtle">{enrollment.progressPercent}%</span>
+                                </li>
+                              ) : (
+                                <li key={enrollment._id} className="text-fg-subtle">
+                                  A course they were enrolled in was removed
+                                </li>
+                              )
+                            )}
                           </ul>
                         )}
                       </td>

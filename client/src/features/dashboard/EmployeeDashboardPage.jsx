@@ -20,7 +20,9 @@ function EmployeeDashboardPage() {
   const { data: courses, isLoading: coursesLoading, isError: coursesError } = useCourses();
   const enroll = useEnroll();
 
-  const enrolledCourseIds = new Set((enrollments ?? []).map((e) => e.course._id));
+  const enrolledCourseIds = new Set(
+    (enrollments ?? []).filter((e) => e.course).map((e) => e.course._id)
+  );
   const availableCourses = (courses ?? []).filter(
     (course) => !enrolledCourseIds.has(course._id)
   );
