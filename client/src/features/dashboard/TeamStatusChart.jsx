@@ -1,20 +1,30 @@
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { computeStatusCounts } from '../../utils/computeStatusCounts';
 
-// TODO: pick 3 colors, one per status (not_started / in_progress / completed).
-// Since these represent state rather than arbitrary categories, consider a
-// status-style palette (e.g. neutral -> warning-ish -> good) rather than
-// unrelated hues. Validate contrast/colorblind-safety before committing to
-// values - don't just eyeball it.
-const STATUS_COLORS = [];
+// Provisional status-progression palette (neutral -> in-progress -> good),
+// order matched to computeStatusCounts' dict insertion order: Completed,
+// Not Started, In Progress. Treat as a placeholder - not run through a
+// contrast/colorblind-safety check.
+const STATUS_COLORS = ['#22c55e', '#9ca3af', '#f59e0b'];
 
 function TeamStatusChart({ members }) {
-  const data = computeStatusCounts(members);
+  // Pie's <Cell> is deprecated as of Recharts 3 (removed in 4.0) - the
+  // replacement is embedding a `fill` on each datum directly rather than
+  // rendering separate <Cell> children per slice.
+  const data = computeStatusCounts(members).map((entry, index) => ({
+    ...entry,
+    fill: STATUS_COLORS[index % STATUS_COLORS.length],
+  }));
 
-  // TODO: render a ResponsiveContainer > PieChart > Pie (data={data},
-  // dataKey="value", nameKey="name") with one <Cell> per entry (fill from
-  // STATUS_COLORS), plus <Tooltip /> and <Legend />.
-  return null;
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie data={data} dataKey="value" nameKey="name" />
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  );
 }
 
 export default TeamStatusChart;

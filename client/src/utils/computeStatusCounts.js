@@ -8,4 +8,26 @@ export function computeStatusCounts(members) {
   // TODO: flatten every member's enrollments into one list, count how many
   // have each status, then map those counts into the [{ name, value }] shape
   // described above.
+  const dict = {
+    Completed: 0,
+    "Not Started": 0,
+    "In Progress": 0,
+  };
+  for (const member of members) {
+    for (const enrollment of member.enrollments) {
+      if (enrollment.status === "completed") {
+        dict["Completed"] += 1;
+      } else if (enrollment.status === "not_started") {
+        dict["Not Started"] += 1;
+      } else if (enrollment.status === "in_progress") {
+        dict["In Progress"] += 1;
+      }
+    }
+  }
+  const ret = Object.entries(dict)
+    .filter(([name, value]) => value > 0)
+    .map(([name, value]) => {
+      return { name: name, value: value };
+    });
+  return ret;
 }
