@@ -19,9 +19,13 @@ function LearningPathManager() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCoursesChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-    setForm({ ...form, courses: selected });
+  const handleCourseToggle = (courseId) => {
+    setForm((prev) => ({
+      ...prev,
+      courses: prev.courses.includes(courseId)
+        ? prev.courses.filter((id) => id !== courseId)
+        : [...prev.courses, courseId],
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -79,18 +83,25 @@ function LearningPathManager() {
           onChange={handleTextChange}
           className={inputClass}
         />
-        <select
-          multiple
-          value={form.courses}
-          onChange={handleCoursesChange}
-          className={`${inputClass} h-28`}
-        >
+        <div className="max-h-40 space-y-1.5 overflow-y-auto rounded-md border border-border bg-bg p-3">
+          {courses?.length === 0 && (
+            <p className="text-sm text-fg-subtle">No courses yet - add one above first.</p>
+          )}
           {courses?.map((course) => (
-            <option key={course._id} value={course._id}>
+            <label
+              key={course._id}
+              className="flex cursor-pointer items-center gap-2 text-sm text-fg"
+            >
+              <input
+                type="checkbox"
+                checked={form.courses.includes(course._id)}
+                onChange={() => handleCourseToggle(course._id)}
+                className="h-4 w-4 rounded border-border bg-bg accent-accent"
+              />
               {course.title}
-            </option>
+            </label>
           ))}
-        </select>
+        </div>
         <button
           type="submit"
           disabled={createLearningPath.isPending}
