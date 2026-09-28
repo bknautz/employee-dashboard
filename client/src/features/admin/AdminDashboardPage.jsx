@@ -1,12 +1,14 @@
-import { BookOpen, Route, Users } from 'lucide-react';
+import { BookOpen, Route, UsersRound, Users } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import CourseManager from './CourseManager';
 import LearningPathManager from './LearningPathManager';
+import TeamManager from './TeamManager';
 import EmployeeAssignment from './EmployeeAssignment';
 
 const NAV_ITEMS = [
   { label: 'Courses', icon: BookOpen, href: '#courses' },
   { label: 'Learning Paths', icon: Route, href: '#learning-paths' },
+  { label: 'Teams', icon: UsersRound, href: '#teams' },
   { label: 'Team Assignment', icon: Users, href: '#team-assignment' },
 ];
 
@@ -21,6 +23,11 @@ function AdminDashboardPage() {
       <section id="learning-paths" className="mb-10 scroll-mt-8">
         <h2 className="mb-3 text-sm font-medium text-fg-muted">Learning Paths</h2>
         <LearningPathManager />
+      </section>
+
+      <section id="teams" className="mb-10 scroll-mt-8">
+        <h2 className="mb-3 text-sm font-medium text-fg-muted">Teams</h2>
+        <TeamManager />
       </section>
 
       <section id="team-assignment" className="scroll-mt-8">
