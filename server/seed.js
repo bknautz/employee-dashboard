@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const { faker } = require('@faker-js/faker');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 const User = require('./models/User');
 const Course = require('./models/Course');
