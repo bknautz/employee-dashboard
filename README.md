@@ -109,9 +109,10 @@ A Postman collection covering the auth flow lives in
   (enroll, update progress, create course, assign team, etc.) invalidate the
   relevant query keys on success rather than manually patching cache.
 - **Design system:** Tailwind v4 (config lives in `@theme` in `index.css`,
-  no separate config file) implementing a Linear-inspired dark UI — a shared
-  `AppShell` sidebar layout, consistent status badges, and card-bordered
-  lists/forms across all three dashboards and the auth pages.
+  no separate config file) implementing a dark UI inspired by
+  [Linear](https://linear.app)'s marketing site and product sidebar — a
+  shared `AppShell` sidebar layout, consistent status badges, and
+  card-bordered lists/forms across all three dashboards and the auth pages.
 - **Chart:** a Recharts pie chart on the manager dashboard summarizing a
   team's enrollments by status (not started / in progress / completed).
 
